@@ -51,7 +51,7 @@ fun YoutubeWV(youtubeVM: YoutubeVM = viewModel()) {
 
     // Fetch scripts and updates at launch
     LaunchedEffect(Unit) {
-        youtubeVM.setScript(fetchScripts() )
+        youtubeVM.setScript(fetchScripts(context))
         getUpdate(context, navigator) { update ->
             if (update != null) youtubeVM.setUpdate(update)
         }
