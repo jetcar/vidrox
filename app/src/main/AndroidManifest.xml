@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:hardwareAccelerated="true"
-        android:theme="@style/Theme.NoTubeTV">
+        android:theme="@style/Theme.VidroX">
 
 
         <activity

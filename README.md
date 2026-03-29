@@ -1,9 +1,9 @@
 > [!IMPORTANT]
 ><p> Looks like this project motivated <i> reisXd</i> to make their work public <a href="https://github.com/reisxd/TizenTubeCobalt">@reisxd/TizenTubeCobalt</a>. Please use <b>TizenTube-Cobalt</b> from the url above which supports everything  including voice search and fixes a lot of our curent issues. And don't forget to show them your love. ❤️ </p>
 
-# NoTubeTV
+# VidroX
 <p align="center">
-  <img src='assets/NoTubeTV_banner.png' alt="NoTubeTV_banner_image">
+  <img src='assets/VidroX_banner.png' alt="VidroX_banner_image">
 </p>
 
 <div align="center">This project owes it's existence to <a href="https://github.com/reisxd/TizenTube">@reisxd/TizenTube</a>. </div>
@@ -43,7 +43,7 @@ app/build/outputs/apk/debug/app-debug.apk
 
 ### After Installation
 To ensure shorts blocking works properly:
-1. Go to **Settings → Apps → NoTubeTV**
+1. Go to **Settings → Apps → VidroX**
 2. Select **Storage → Clear Data**
 3. Restart the app
 

@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import com.jetcar.vidrox.ui.screens.YoutubeWV
-import com.jetcar.vidrox.ui.theme.NoTubeTVTheme
+import com.jetcar.vidrox.ui.theme.VidroXTheme
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalTvMaterial3Api::class)
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            NoTubeTVTheme {
+            VidroXTheme {
                 Box(modifier = Modifier.fillMaxSize()) { YoutubeWV() }
             }
         }
