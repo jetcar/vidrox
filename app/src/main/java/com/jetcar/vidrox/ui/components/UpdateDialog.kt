@@ -14,10 +14,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -31,14 +32,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import com.jetcar.vidrox.utils.ReleaseData
-import kotlinx.coroutines.launch
+
+private const val UPDATE_TIMEOUT_SECONDS = 10
 
 @Composable
 fun UpdateDialog(releaseData: ReleaseData, onDismiss: () -> Unit) {
     val isShowDialog = rememberSaveable { mutableStateOf(true) }
     val isDownload = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-    val scope = rememberCoroutineScope()
+    val countdown = remember { mutableIntStateOf(UPDATE_TIMEOUT_SECONDS) }
 
     if (isDownload.value)
         UpdateAppScreen(releaseData.tagName, releaseData.downloadUrl, onDismiss)
@@ -83,9 +85,10 @@ fun UpdateDialog(releaseData: ReleaseData, onDismiss: () -> Unit) {
                         Spacer(modifier = Modifier.width(10.dp))
 
                         YTButton(
-                            "Update",
+                            "Update (${countdown.intValue})",
                             Modifier.focusRequester(focusRequester)
                         ) {
+                            countdown.intValue = 0
                             isDownload.value = true
                             isShowDialog.value = false
                         }
@@ -93,9 +96,15 @@ fun UpdateDialog(releaseData: ReleaseData, onDismiss: () -> Unit) {
                 }
             }
         }
-        // Request focus for Update button.
+        // Request focus for Update button and run countdown timer.
         LaunchedEffect(Unit) {
-            scope.launch { focusRequester.requestFocus() }
+            focusRequester.requestFocus()
+            while (countdown.intValue > 0) {
+                delay(1000L)
+                countdown.intValue--
+            }
+            isDownload.value = true
+            isShowDialog.value = false
         }
     }
 }
