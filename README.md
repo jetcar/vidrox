@@ -36,6 +36,24 @@
 ./gradlew assembleRelease
 ```
 
+### Release Signing
+
+Release builds now read signing data from either GitHub Actions secrets or your local `local.properties`.
+
+GitHub Actions secrets required for signed releases:
+
+- `ANDROID_KEYSTORE_BASE64`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+
+For local release builds, add these keys to your untracked `local.properties`:
+
+- `androidKeystorePath`
+- `androidKeystorePassword`
+- `androidKeyAlias`
+- `androidKeyPassword`
+
 The generated APKs will be located at:
 
 - Debug: `app/build/outputs/apk/debug/app-debug.apk`

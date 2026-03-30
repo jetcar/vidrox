@@ -145,42 +145,39 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
-      - name: Restore stable debug keystore
-        id: debug_keystore
-        uses: actions/cache@v4
-        with:
-          path: ~/.android/debug.keystore
-          key: vidrox-debug-keystore-v1
-
-      - name: Create stable debug keystore
-        if: steps.debug_keystore.outputs.cache-hit != 'true'
+      - name: Prepare release signing keystore
         shell: bash
         run: |
-          # Keep GitHub debug APK releases upgrade-compatible across workflow runs.
-          # This is only for debug signing continuity, not for production release signing.
-          mkdir -p ~/.android
-          keytool -genkeypair \
-            -keystore ~/.android/debug.keystore \
-            -storepass android \
-            -alias androiddebugkey \
-            -keypass android \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          test -n "$ANDROID_KEYSTORE_PASSWORD"
+          test -n "$ANDROID_KEY_ALIAS"
+          test -n "$ANDROID_KEY_PASSWORD"
+
+          KEYSTORE_PATH="$RUNNER_TEMP/vidrox-release.jks"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+
+          echo "ANDROID_KEYSTORE_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
+          echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD" >> "$GITHUB_ENV"
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Build project
-        run: ./gradlew --no-daemon assembleDebug
+        run: ./gradlew --no-daemon assembleRelease
 
       - name: Rename APK to app name
         run: |
-          cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/VidroX-${{ needs.detect_release_need.outputs.release_tag }}.apk
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/VidroX-${{ needs.detect_release_need.outputs.release_tag }}.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v5
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/VidroX-${{ needs.detect_release_need.outputs.release_tag }}.apk
+          name: app-release-apk
+          path: app/build/outputs/apk/release/VidroX-${{ needs.detect_release_need.outputs.release_tag }}.apk
 
   publish_release:
     needs:
@@ -194,7 +191,7 @@ jobs:
       - name: Download APK artifact
         uses: actions/download-artifact@v5
         with:
-          name: app-debug-apk
+          name: app-release-apk
           path: release-artifacts
 
       - name: Publish GitHub release

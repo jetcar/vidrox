@@ -1,26 +1,74 @@
 @file:Suppress("DEPRECATION")
 
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use(::load)
+    }
+}
+
+fun resolveSigningProperty(envName: String, localPropertyName: String): String? {
+    return providers.environmentVariable(envName).orNull
+        ?: localProperties.getProperty(localPropertyName)?.takeIf { it.isNotBlank() }
+}
+
+val releaseKeystorePath = resolveSigningProperty("ANDROID_KEYSTORE_PATH", "androidKeystorePath")
+val releaseKeystorePassword = resolveSigningProperty("ANDROID_KEYSTORE_PASSWORD", "androidKeystorePassword")
+val releaseKeyAlias = resolveSigningProperty("ANDROID_KEY_ALIAS", "androidKeyAlias")
+val releaseKeyPassword = resolveSigningProperty("ANDROID_KEY_PASSWORD", "androidKeyPassword")
+
+val isReleaseBuildRequested = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("Release", ignoreCase = true)
+}
+
+val hasReleaseSigning = listOf(
+    releaseKeystorePath,
+    releaseKeystorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword,
+).all { !it.isNullOrBlank() }
+
+if (isReleaseBuildRequested && !hasReleaseSigning) {
+    throw GradleException(
+        "Release signing is not configured. Set ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD or add androidKeystorePath, androidKeystorePassword, androidKeyAlias, androidKeyPassword to local.properties."
+    )
+}
+
 android {
     namespace = "com.jetcar.vidrox"
     compileSdk = 36
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(requireNotNull(releaseKeystorePath))
+                storePassword = requireNotNull(releaseKeystorePassword)
+                keyAlias = requireNotNull(releaseKeyAlias)
+                keyPassword = requireNotNull(releaseKeyPassword)
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.jetcar.vidrox"
         minSdk = 24
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.0.3"
+        versionCode = 5
+        versionName = "0.0.5"
 
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
