@@ -66,11 +66,11 @@ fun UpdateDialog(releaseData: ReleaseData, onDismiss: () -> Unit) {
                         fontSize = 22.sp
                     )
 
-                   Text(
-                       text = AnnotatedString.fromHtml(releaseData.changelog),
-                       modifier = Modifier.padding(horizontal = 20.dp),
-                       color = Color.White,
-                       fontSize = 16.sp
+                    Text(
+                        text = AnnotatedString.fromHtml(releaseData.changelog),
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        color = Color.White,
+                        fontSize = 16.sp
                     )
 
                     Row {

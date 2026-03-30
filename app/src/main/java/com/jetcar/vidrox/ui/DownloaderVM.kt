@@ -24,6 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+private const val APK_MIME_TYPE = "application/vnd.android.package-archive"
+
 class UpdateViewModel : ViewModel() {
 
     private val _downloadProgress = MutableStateFlow(0)
@@ -114,7 +116,7 @@ class UpdateViewModel : ViewModel() {
         }
 
         val intent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
-            setDataAndType(apkUri, "application/vnd.android.package-archive")
+            setDataAndType(apkUri, APK_MIME_TYPE)
             putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -126,7 +128,7 @@ class UpdateViewModel : ViewModel() {
         } catch (_: ActivityNotFoundException) {
             return try {
                 val fallbackIntent = Intent(Intent.ACTION_VIEW).apply {
-                    setDataAndType(apkUri, "application/vnd.android.package-archive")
+                    setDataAndType(apkUri, APK_MIME_TYPE)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }

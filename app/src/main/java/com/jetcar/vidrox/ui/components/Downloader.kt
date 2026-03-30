@@ -124,7 +124,11 @@ fun UpdateAppScreen(tagName: String, downloadUrl: String, onDismiss: () -> Unit)
                         Spacer(modifier = Modifier.width(10.dp))
 
                         YTButton("Install") {
-                            val apkFile = downloadedApk.value ?: return@YTButton
+                            val apkFile = downloadedApk.value ?: run {
+                                isShowDialog.value = false
+                                onDismiss()
+                                return@YTButton
+                            }
                             if (viewModel.installApk(context, apkFile)) {
                                 isShowDialog.value = false
                                 onDismiss()
