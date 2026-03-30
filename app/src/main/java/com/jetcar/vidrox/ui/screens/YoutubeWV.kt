@@ -60,7 +60,7 @@ import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
 import com.jetcar.vidrox.R
 import com.jetcar.vidrox.ui.YoutubeVM
-import com.jetcar.vidrox.ui.components.UpdateAppScreen
+import com.jetcar.vidrox.ui.components.UpdateDialog
 import com.jetcar.vidrox.utils.ExitBridge
 import com.jetcar.vidrox.utils.NetworkBridge
 import com.jetcar.vidrox.utils.fetchScripts
@@ -205,8 +205,8 @@ fun YoutubeWV(youtubeVM: YoutubeVM = viewModel()) {
 
     if (loadingState == LoadingState.Finished && jsScript != null)
         navigator.evaluateJavaScript(jsScript)
-    // Auto-update immediately when a newer GitHub release is detected.
-    if (updateData != null) UpdateAppScreen(updateData.tagName, updateData.downloadUrl)
+    // Offer the update first, then continue only after explicit confirmation.
+    if (updateData != null) UpdateDialog(updateData) { youtubeVM.clearUpdate() }
     // If exit button is pressed, 'finish the activity' aka 'exit the app'.
     if (exitTrigger.value) activity.finish()
 

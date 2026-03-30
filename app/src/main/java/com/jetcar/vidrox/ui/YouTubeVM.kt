@@ -13,4 +13,5 @@ class YoutubeVM : ViewModel() {
 
     fun setScript(data: String) { _scriptData.value = data }
     fun setUpdate(data: ReleaseData) { _updateData.value = data }
+    fun clearUpdate() { _updateData.value = null }
 }
