@@ -572,3 +572,4 @@ local.properties
 /tools/youtube-tv-capture/node_modules/.package-lock.json
 /tools/youtube-tv-capture/package-lock.json
 /tools/youtube-tv-capture/youtube-tv.state.base64.txt
+/.idea/copilotDiffState.xml

@@ -12,6 +12,7 @@ import android.webkit.WebView as AndroidWebView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -229,6 +230,7 @@ fun YoutubeWV(youtubeVM: YoutubeVM = viewModel()) {
             DirectionPadOverlay(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
                     .padding(NAV_PAD_PADDING),
                 onUp = {
                     showDirectionPad()
@@ -251,6 +253,7 @@ fun YoutubeWV(youtubeVM: YoutubeVM = viewModel()) {
                 text = "v$versionName",
                 modifier = Modifier
                     .align(Alignment.BottomStart)
+                    .navigationBarsPadding()
                     .padding(NAV_PAD_PADDING),
                 color = Color.White.copy(alpha = 0.5f),
                 fontSize = 12.sp,
