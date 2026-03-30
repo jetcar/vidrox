@@ -29,23 +29,25 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
-import com.multiplatform.webview.web.WebViewNavigator
 import com.jetcar.vidrox.utils.ReleaseData
 import kotlinx.coroutines.launch
 
 @Composable
-fun UpdateDialog(releaseData: ReleaseData, navigator: WebViewNavigator) {
+fun UpdateDialog(releaseData: ReleaseData, onDismiss: () -> Unit) {
     val isShowDialog = rememberSaveable { mutableStateOf(true) }
     val isDownload = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val scope = rememberCoroutineScope()
 
     if (isDownload.value)
-        UpdateAppScreen(releaseData.tagName, releaseData.downloadUrl)
+        UpdateAppScreen(releaseData.tagName, releaseData.downloadUrl, onDismiss)
 
     if (isShowDialog.value) {
         Dialog(
-            onDismissRequest = { isShowDialog.value = false }
+            onDismissRequest = {
+                isShowDialog.value = false
+                onDismiss()
+            }
         ) {
             Surface(
                 shape = RoundedCornerShape(10.dp),
@@ -64,32 +66,27 @@ fun UpdateDialog(releaseData: ReleaseData, navigator: WebViewNavigator) {
                         fontSize = 22.sp
                     )
 
-                   Text(
-                       text = AnnotatedString.fromHtml(releaseData.changelog),
-                       modifier = Modifier.padding(horizontal = 20.dp),
-                       color = Color.White,
-                       fontSize = 16.sp
-                   )
+                    Text(
+                        text = AnnotatedString.fromHtml(releaseData.changelog),
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
 
                     Row {
-                        YTButton("Cancel") { isShowDialog.value = false }
+                        YTButton("Cancel") {
+                            isShowDialog.value = false
+                            onDismiss()
+                        }
 
                         Spacer(modifier = Modifier.width(10.dp))
 
                         YTButton(
-                            "Update Now",
+                            "Update",
                             Modifier.focusRequester(focusRequester)
                         ) {
                             isDownload.value = true
                             isShowDialog.value = false
-                        }
-
-                        Spacer(modifier = Modifier.weight(1F))
-
-                        YTButton("Skip this version") {
-                            navigator.evaluateJavaScript(
-                                "configWrite('skipVersionName', '${releaseData.tagName}')"
-                            ) { isShowDialog.value = false }
                         }
                     }
                 }
